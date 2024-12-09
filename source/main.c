@@ -7,6 +7,7 @@
 #include "commands.h"
 #include "output.h"
 
+/* Show usage help */
 void usage(char *executable)
 {
 	fprintf(stdout, "Usage:\n");
@@ -21,22 +22,20 @@ void usage(char *executable)
 
 int main(int argc, char **argv)
 {
+
 	setlocale(LC_ALL, getenv("LANG"));
 
 	if (argc <= 1)
-	{
-		usage(argv[0]);
+		usage(argv[0]),
 		exit(EXIT_FAILURE);
-	}
 
 	if (argc == 2 && (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0))
-	{
-		usage(argv[0]);
+		usage(argv[0]),
 		exit(EXIT_SUCCESS);
-	}
 
-	if (argc >= 3 || argc >= 4)
+	else if (argc >= 3 || argc >= 4)
 	{
+
 		FILE *fp = fopen(argv[argc - 1], "rb+");
 
 		if (!fp)
@@ -49,18 +48,11 @@ int main(int argc, char **argv)
 		rfat(fp, &bpb);
 		char *command = argv[1];
 
-		if (bpb.sect_per_fat32 != 0)
-		{
-			printf("FAT32 detected.\n");
-		}
-		else
-		{
-			printf("FAT16 detected.\n");
-		}
+//		verbose(&bpb);
 
 		if (strcmp(command, "ls") == 0)
 		{
-			struct fat_dir *dirs = ls(fp, &bpb); // Chama a função ls declarada em commands.c
+			struct fat_dir *dirs = ls(fp, &bpb);
 			show_files(dirs);
 		}
 
@@ -70,12 +62,12 @@ int main(int argc, char **argv)
 			fclose(fp);
 		}
 
+
 		if (strcmp(command, "mv") == 0)
 		{
 			mv(fp, argv[2], argv[3], &bpb);
 			fclose(fp);
 		}
-
 		if (strcmp(command, "rm") == 0)
 		{
 			rm(fp, argv[2], &bpb);
